@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ChatBot Pro - Intelligent Conversations</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2 id="authTitle">Welcome to AI ChatBot Pro</h2>
+                    <p id="authSubtitle">Sign in to your account</p>
+                </div>
+                
+                <form id="authForm" class="auth-form">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--full-width" id="authSubmit">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>
+                        <span id="authSwitchText">Don't have an account?</span>
+                        <button type="button" id="authSwitch" class="auth-link">Sign up</button>
+                    </p>
+                </div>
+                
+                <div class="demo-accounts">
+                    <p class="demo-title">Demo Accounts:</p>
+                    <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="demo@chatbot.com" data-password="demo123">
+                        User Demo
+                    </button>
+                    <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="admin@chatbot.com" data-password="admin123">
+                        Admin Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <h3>AI ChatBot Pro</h3>
+                </div>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="chat">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Chat</span>
+                </a>
+                <a href="#" class="nav-item" data-page="conversations">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Conversations</span>
+                </a>
+                <a href="#" class="nav-item" data-page="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="admin" style="display: none;">
+                    <span class="nav-icon">👑</span>
+                    <span class="nav-text">Admin</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <span id="userInitials">DU</span>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Demo User</span>
+                        <span class="user-email" id="userEmail">demo@chatbot.com</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn--outline btn--sm">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="header-actions">
+                    <button id="newChatBtn" class="btn btn--primary">
+                        <span>💬</span> New Chat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-content">
+                            <h3 id="totalConversations">156</h3>
+                            <p>Total Conversations</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-content">
+                            <h3 id="totalMessages">1,243</h3>
+                            <p>Messages Sent</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <h3 id="avgResponseTime">2.3s</h3>
+                            <p>Avg Response Time</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-content">
+                            <h3 id="userSatisfaction">4.7/5</h3>
+                            <p>User Satisfaction</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="recent-conversations">
+                        <h3>Recent Conversations</h3>
+                        <div id="recentConversationsList" class="conversations-list">
+                            <!-- Conversations will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-card" data-action="new-chat">
+                                <span class="action-icon">💬</span>
+                                <span class="action-text">Start New Chat</span>
+                            </button>
+                            <button class="action-card" data-action="view-analytics">
+                                <span class="action-icon">📊</span>
+                                <span class="action-text">View Analytics</span>
+                            </button>
+                            <button class="action-card" data-action="settings">
+                                <span class="action-icon">⚙️</span>
+                                <span class="action-text">Settings</span>
+                            </button>
+                            <button class="action-card" data-action="export-data">
+                                <span class="action-icon">📥</span>
+                                <span class="action-text">Export Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Page -->
+            <div id="chatPage" class="page">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3 id="chatTitle">New Conversation</h3>
+                        <div class="chat-actions">
+                            <button id="exportChatBtn" class="btn btn--outline btn--sm">Export</button>
+                            <button id="deleteChatBtn" class="btn btn--outline btn--sm">Delete</button>
+                        </div>
+                    </div>
+                    
+                    <div id="messagesContainer" class="messages-container">
+                        <div class="welcome-message">
+                            <div class="welcome-icon">🤖</div>
+                            <h3>Hello! I'm your AI assistant.</h3>
+                            <p>How can I help you today?</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <div class="typing-indicator hidden" id="typingIndicator">
+                            <span class="typing-text">AI is typing</span>
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <textarea id="messageInput" placeholder="Type your message..." rows="1"></textarea>
+                            <button id="sendMessage" class="send-button">
+                                <span class="send-icon">▲</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversations Page -->
+            <div id="conversationsPage" class="page">
+                <div class="conversations-header">
+                    <div class="search-bar">
+                        <input type="text" id="conversationSearch" placeholder="Search conversations..." class="form-control">
+                    </div>
+                    <div class="filter-options">
+                        <select id="conversationFilter" class="form-control">
+                            <option value="all">All Conversations</option>
+                            <option value="recent">Recent</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="conversationsGrid" class="conversations-grid">
+                    <!-- Conversations will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Analytics Page -->
+            <div id="analyticsPage" class="page">
+                <div class="analytics-overview">
+                    <div class="analytics-card">
+                        <h3>Conversation Trends</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="conversationChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Response Time Distribution</h3>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="responseTimeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-metrics">
+                    <div class="metric-card">
+                        <h4>Popular Topics</h4>
+                        <div class="topic-list">
+                            <div class="topic-item">
+                                <span class="topic-name">AI & Machine Learning</span>
+                                <span class="topic-count">45%</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">Web Development</span>
+                                <span class="topic-count">32%</span>
+                            </div>
+                            <div class="topic-item">
+                                <span class="topic-name">General Questions</span>
+                                <span class="topic-count">23%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page">
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>Bot Configuration</h3>
+                        <div class="setting-group">
+                            <label for="botPersonality" class="form-label">Bot Personality</label>
+                            <select id="botPersonality" class="form-control">
+                                <option value="professional">Professional</option>
+                                <option value="friendly">Friendly</option>
+                                <option value="casual">Casual</option>
+                                <option value="technical">Technical</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label for="responseLength" class="form-label">Response Length</label>
+                            <select id="responseLength" class="form-control">
+                                <option value="short">Short</option>
+                                <option value="medium">Medium</option>
+                                <option value="long">Long</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>User Preferences</h3>
+                        <div class="setting-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableNotifications" checked>
+                                <span class="checkmark"></span>
+                                Enable Notifications
+                            </label>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableSounds" checked>
+                                <span class="checkmark"></span>
+                                Enable Sound Effects
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-actions">
+                        <button id="saveSettings" class="btn btn--primary">Save Settings</button>
+                        <button id="resetSettings" class="btn btn--outline">Reset to Default</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="adminPage" class="page">
+                <div class="admin-container">
+                    <div class="admin-stats">
+                        <div class="admin-stat-card">
+                            <h4>Total Users</h4>
+                            <span class="admin-stat-value">2,847</span>
+                        </div>
+                        <div class="admin-stat-card">
+                            <h4>Active Sessions</h4>
+                            <span class="admin-stat-value">156</span>
+                        </div>
+                        <div class="admin-stat-card">
+                            <h4>System Health</h4>
+                            <span class="admin-stat-value status--success">98.5%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-actions">
+                        <h3>System Management</h3>
+                        <div class="admin-buttons">
+                            <button class="btn btn--primary">Backup Data</button>
+                            <button class="btn btn--outline">View Logs</button>
+                            <button class="btn btn--outline">System Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
